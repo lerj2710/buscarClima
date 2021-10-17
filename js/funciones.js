@@ -37,9 +37,13 @@ function consultarAPI(ciudad, pais) {
    
     const keyAPI = '61d8a379e63301ab8c640e3fb8fb695a';
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&appid=${keyAPI}`;
+    spiner();
+    
     fetch(url)
         .then(respuesta => respuesta.json())
         .then(datos => {
+
+            console.log(datos);
              //limpiar html
                 limpiarHTML();
 
@@ -52,15 +56,23 @@ function consultarAPI(ciudad, pais) {
         })
 }
 function mostrarHtml(datos) {
-    const {main:{temp}}= datos;
+    const {main:{temp}, name}= datos;
+
     const centigrados = kelvinCentigrados(temp);
+    
+    const nombreCiudad = document.createElement('p');
+          nombreCiudad.textContent = `Clima en ${name}`;
+          nombreCiudad.classList.add('font-bold','text-2xl');
+
     const tempActual = document.createElement('p');
-    tempActual.innerHTML = `${centigrados} &#8451`;
-    tempActual.classList.add('font-bold','text-6xl');
+          tempActual.innerHTML = `${centigrados} &#8451`;
+          tempActual.classList.add('font-bold','text-6xl');
 
     const tempDiv = document.createElement('div');
-    tempDiv.classList.add('text-center', 'text-white');
-    tempDiv.appendChild(tempActual);
+          tempDiv.classList.add('text-center', 'text-white');
+         
+          tempDiv.appendChild(nombreCiudad);
+          tempDiv.appendChild(tempActual);
 
     resultado.appendChild(tempDiv);
     
@@ -71,4 +83,15 @@ const limpiarHTML = () =>{
     while (resultado.firstChild) {
         resultado.removeChild(resultado.firstChild)
     }
+}
+
+function spiner() {
+    limpiarHTML();
+    const divSpiner =document.createElement('div');
+          divSpiner.classList.add('spinner');
+          divSpiner.innerHTML = `
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+          `;
+          resultado.appendChild(divSpiner)
 }
