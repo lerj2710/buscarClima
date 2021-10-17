@@ -1,4 +1,4 @@
-
+import { resultado } from './selectores.js';
 export function BuscarClima(e){
     e.preventDefault();
 
@@ -34,9 +34,41 @@ function mostrarAlerta(mensaje) {
 }
 
 function consultarAPI(ciudad, pais) {
+   
     const keyAPI = '61d8a379e63301ab8c640e3fb8fb695a';
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&appid=${keyAPI}`;
     fetch(url)
         .then(respuesta => respuesta.json())
-        .then(rulstado => console.log(rulstado))
+        .then(datos => {
+             //limpiar html
+                limpiarHTML();
+
+            if (datos.cod === "404") {
+                mostrarAlerta('Ciudad no encontrada');
+                return;
+            }
+            // imprimir html
+            mostrarHtml(datos);
+        })
+}
+function mostrarHtml(datos) {
+    const {main:{temp}}= datos;
+    const centigrados = kelvinCentigrados(temp);
+    const tempActual = document.createElement('p');
+    tempActual.innerHTML = `${centigrados} &#8451`;
+    tempActual.classList.add('font-bold','text-6xl');
+
+    const tempDiv = document.createElement('div');
+    tempDiv.classList.add('text-center', 'text-white');
+    tempDiv.appendChild(tempActual);
+
+    resultado.appendChild(tempDiv);
+    
+}
+const  kelvinCentigrados = grado => parseInt(grado -273.15);
+
+const limpiarHTML = () =>{
+    while (resultado.firstChild) {
+        resultado.removeChild(resultado.firstChild)
+    }
 }
